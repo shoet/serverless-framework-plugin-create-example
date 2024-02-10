@@ -1,0 +1,37 @@
+service: sls-plugin-create-example
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: provided.al2
+  region: ap-northeast-1
+
+plugins:
+  - ./serverless_plugins/example_plugin.js
+
+package:
+  patterns:
+    - "!./**"
+    - ./.bin/**
+
+custom:
+  example:
+    cmd: GOARCH=amd64 GOOS=linux go build -ldflags="-s -w"
+    ignoreFunctions:
+      - hello
+    outputDir: "./.bin"
+
+functions:
+  hello:
+    handler: hello/main.go
+    events:
+      - httpApi:
+          path: /hello
+          method: get
+
+  world:
+    handler: world/main.go
+    events:
+      - httpApi:
+          path: /world
+          method: get
